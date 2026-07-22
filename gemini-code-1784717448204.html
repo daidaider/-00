@@ -288,7 +288,6 @@
                         }
                         const rows = results.data.slice(1);
                         attractionsData = rows.map((row, index) => {
-                            // 1. 參照 A 欄位：A欄判斷「景點」與「美食」
                             const categoryA = (row[0] || '').trim(); 
                             const isSpot = categoryA.includes('景點') || categoryA.toLowerCase().includes('spot');
                             
@@ -296,8 +295,6 @@
                             const address = (row[2] || '').trim();
                             const phone = (row[3] || '').trim();
                             const time = (row[4] || '').trim();
-                            
-                            // 2. F 欄位：舊標註 NOTE 內容
                             const noteF = (row[5] || '').trim(); 
                             
                             const mapUrl = `https://maps.google.com/?q=${encodeURIComponent(name || address || '苗栗公館')}`;
@@ -412,7 +409,6 @@
                 const card = document.createElement('div');
                 card.className = "bg-white rounded-3xl p-6 border border-stone-100 shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between";
                 
-                // F 欄 NOTE 舊標註顯示區塊 (位於景點名稱與地址之間)
                 const noteBlockHtml = item.noteF ? `
                     <div class="my-3 bg-amber-50/80 p-3 rounded-xl border border-amber-200 text-xs text-amber-900 leading-relaxed font-medium">
                         <div class="font-bold text-amber-700 flex items-center gap-1 mb-1">
@@ -424,7 +420,6 @@
 
                 card.innerHTML = `
                     <div>
-                        <!-- 1. 景點名稱與收藏 -->
                         <div class="flex justify-between items-start mb-2">
                             <h3 class="text-lg font-black text-stone-800">${item.name}</h3>
                             <button onclick="toggleFavorite('${item.id}')" class="text-xl ${isFav ? 'text-jujube-500' : 'text-stone-300'} transition">
@@ -432,17 +427,14 @@
                             </button>
                         </div>
 
-                        <!-- 參照 A 欄位顯示標籤 -->
                         <div class="mb-2">
                             <span class="${isSpot ? 'bg-olive-50 text-olive-600' : 'bg-amber-50 text-amber-600'} text-xs px-2.5 py-1 rounded-md font-black">
                                 ${isSpot ? '📍 ' : '🍔 '} ${item.categoryName}
                             </span>
                         </div>
 
-                        <!-- 2. 【中間】 Excel F 欄 NOTE 舊標註 -->
                         ${noteBlockHtml}
 
-                        <!-- 3. 地址與其他資訊 -->
                         <div class="space-y-2 text-stone-600 text-sm mb-6 mt-3">
                             <p class="flex items-start gap-2">
                                 <i class="fa-solid fa-location-dot text-stone-400 mt-1"></i>
@@ -453,7 +445,6 @@
                         </div>
                     </div>
 
-                    <!-- 操作按鈕 -->
                     <div class="grid grid-cols-2 gap-2 pt-4 border-t border-stone-100">
                         <a href="${item.mapUrl}" target="_blank" class="bg-olive-50 hover:bg-olive-100 text-olive-600 py-2 rounded-xl text-xs font-bold flex items-center justify-center gap-1">
                             <i class="fa-solid fa-map-location-dot"></i> 地圖導航
@@ -551,13 +542,16 @@
                 return;
             }
             navigator.clipboard.writeText(addr).then(() => {
-                showToast('地址已複製到剪貼簿！');
+                showToast('地址已成功複製！');
+            }).catch(() => {
+                showToast('複製失敗，請手動複製');
             });
         }
 
         function showToast(msg) {
             const toast = document.getElementById('toast');
-            document.getElementById('toast-message').innerText = msg;
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.innerText = msg;
             toast.classList.remove('translate-y-20', 'opacity-0', 'pointer-events-none');
             setTimeout(() => {
                 toast.classList.add('translate-y-20', 'opacity-0', 'pointer-events-none');
